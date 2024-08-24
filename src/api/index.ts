@@ -101,7 +101,7 @@ export default (rootDirectory: string): Router | Router[] => {
       /* @ts-ignore */
       const { success, error, data } = schema.safeParse(req.body)
       if (!success) {
-         throw new MedusaError(MedusaError.Types.INVALID_DATA, null, null, error)
+         return res.json(JSON.parse(error.message))
       }
       const blogService = req.scope.resolve("blogService")
       blogService.addBlogCategory(data).then((blog_category) => {
@@ -122,7 +122,7 @@ export default (rootDirectory: string): Router | Router[] => {
       /* @ts-ignore */
       const { success, error, data } = schema.safeParse(req.body)
       if (!success) {
-         throw new MedusaError(MedusaError.Types.INVALID_DATA, null, null, error)
+         return res.json(JSON.parse(error.message))
       }
       const blogService = req.scope.resolve("blogService")
       blogService.updateBlogCategory(req.params.id, data).then((blog_category) => {
@@ -186,7 +186,7 @@ export default (rootDirectory: string): Router | Router[] => {
       /* @ts-ignore */
       const { success, error, data } = schema.safeParse(req.body)
       if (!success) {
-         throw new MedusaError(MedusaError.Types.INVALID_DATA, null, null, error)
+         return res.json(JSON.parse(error.message))
       }
       const blogService = req.scope.resolve("blogService")
       blogService.updateBlogPost(req.params.id, data).then((blog_post) => {
@@ -211,7 +211,7 @@ export default (rootDirectory: string): Router | Router[] => {
       /* @ts-ignore */
       const { success, error, data } = schema.safeParse(req.body)
       if (!success) {
-         throw new MedusaError(MedusaError.Types.INVALID_DATA, null, null, error)
+         return res.json(JSON.parse(error.message))
       }
       const blogService = req.scope.resolve("blogService")
       blogService.addBlogTag(data.value).then((blog_tag) => {
@@ -228,7 +228,7 @@ export default (rootDirectory: string): Router | Router[] => {
       /* @ts-ignore */
       const { success, error, data } = schema.safeParse(req.body)
       if (!success) {
-         throw new MedusaError(MedusaError.Types.INVALID_DATA, null, null, error)
+         return res.json(JSON.parse(error.message))
       }
       const blogService = req.scope.resolve("blogService")
       blogService.updateBlogTag(req.params.id, data.value).then((blog_tag) => {
