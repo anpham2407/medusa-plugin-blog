@@ -1,0 +1,41 @@
+{
+   "name": "medusa-plugin-blog",
+   "version": "0.1.1",
+   "description": "Basic blog backend for Medusa",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/pevey/medusa-plugin-blog"
+   },
+   "homepage": "https://pevey.com/medusa-plugin-blog",
+   "author": "Lacey Pevey",
+   "license": "MIT",
+   "keywords": [
+      "medusa-plugin",
+      "blog",
+      "ecommerce",
+      "headless",
+      "medusa"
+   ],
+   "devDependencies": {
+      "@medusajs/admin-ui": "^2.1.2",
+      "cors": "^2.8.5",
+      "cross-env": "^7.0.3",
+      "express": "^4.18.2",
+      "typeorm": "^0.3.17",
+      "typescript": "^5.2.2"
+   },
+   "scripts": {
+      "prepare": "cross-env NODE_ENV=production yarn run build",
+      "test": "jest --passWithNoTests src",
+      "build": "tsc",
+      "watch": "tsc --watch"
+   },
+   "dependencies": {
+      "medusa-core-utils": "^1.2.3",
+      "zod": "^3.22.2"
+   },
+   "peerDependencies": {
+      "@medusajs/medusa": "^1.20.8",
+      "@medusajs/utils": "1.9.0"
+   }
+}
