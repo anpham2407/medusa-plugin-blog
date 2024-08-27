@@ -8996,9 +8996,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"medusa-plugin-blog@workspace:.":
+"medusa-plugin-customer-blog@workspace:.":
   version: 0.0.0-use.local
-  resolution: "medusa-plugin-blog@workspace:."
+  resolution: "medusa-plugin-customer-blog@workspace:."
   dependencies:
     "@medusajs/admin-ui": "npm:^2.1.2"
     cors: "npm:^2.8.5"
