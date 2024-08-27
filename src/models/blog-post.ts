@@ -1,4 +1,4 @@
-import { BaseEntity, Product, ProductCollection } from "@medusajs/medusa"
+import { BaseEntity, Customer, Product, ProductCollection } from "@medusajs/medusa"
 import { generateEntityId } from "@medusajs/utils"
 import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, ManyToMany, JoinTable } from "typeorm"
 import { BlogCategory } from "./blog-category"
@@ -22,7 +22,7 @@ export class BlogPost extends BaseEntity {
 
    @Column({ type: "text", nullable: true })
    content: string | null
-   
+
    @Column({ type: "text", nullable: true })
    description: string | null
 
@@ -30,8 +30,15 @@ export class BlogPost extends BaseEntity {
    keywords: string[] | null
 
    @Column({ type: "varchar", nullable: true })
+   customer_id: string
+
+   @ManyToOne(() => Customer)
+   @JoinColumn({ name: "customer_id" })
+   customer: Customer
+
+   @Column({ type: "varchar", nullable: true })
    category_id: string
-   
+
    @ManyToOne(() => BlogCategory)
    @JoinColumn({ name: "category_id" })
    category: BlogCategory
@@ -49,7 +56,7 @@ export class BlogPost extends BaseEntity {
       },
    })
    tags: BlogTag[]
-   
+
    @ManyToMany(() => Product)
    @JoinTable({
       name: "blog_product_tags",

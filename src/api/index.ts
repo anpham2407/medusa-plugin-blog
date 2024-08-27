@@ -1,8 +1,7 @@
 import cors from "cors"
 import configLoader from "@medusajs/medusa/dist/loaders/config"
 import { json, Router } from "express"
-import { authenticate } from "@medusajs/medusa"
-import { MedusaError } from "@medusajs/utils"
+import { requireCustomerAuthentication } from "@medusajs/medusa"
 import { z } from "zod"
 
 export default (rootDirectory: string): Router | Router[] => {
@@ -89,8 +88,8 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // ADD A BLOG CATEGORY
-   router.use("/admin/blog/categories", json())
-   router.post("/admin/blog/categories", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.use("/store/blog/categories", json())
+   router.post("/store/blog/categories", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const schema = z.object({
          handle: z.string().min(1),
          title: z.string().min(1),
@@ -110,8 +109,8 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // UPDATE A BLOG CATEGORY
-   router.use("/admin/blog/categories/:id", json())
-   router.post("/admin/blog/categories/:id", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.use("/store/blog/categories/:id", json())
+   router.post("/store/blog/categories/:id", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const schema = z.object({
          handle: z.string().min(1),
          title: z.string().min(1),
@@ -131,7 +130,7 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // DELETE A BLOG CATEGORY
-   router.delete("/admin/blog/categories/:id", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.delete("/store/blog/categories/:id", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const blogService = req.scope.resolve("blogService")
       blogService.deleteBlogCategory(req.params.id).then(() => {
          return res.sendStatus(200)
@@ -139,8 +138,8 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // ADD A BLOG POST
-   router.use("/admin/blog/posts", json())
-   router.post("/admin/blog/posts", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.use("/store/blog/posts", json())
+   router.post("/store/blog/posts", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const schema = z.object({
          handle: z.string().optional(),
          title: z.string().min(1),
@@ -167,8 +166,8 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // UPDATE A BLOG POST
-   router.use("/admin/blog/posts/:id", json())
-   router.post("/admin/blog/posts/:id", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.use("/store/blog/posts/:id", json())
+   router.post("/store/blog/posts/:id", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const schema = z.object({
          handle: z.string().optional(),
          title: z.string().min(1),
@@ -195,7 +194,7 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // DELETE A BLOG POST
-   router.delete("/admin/blog/posts/:id", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.delete("/store/blog/posts/:id", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const blogService = req.scope.resolve("blogService")
       blogService.deleteBlogPost(req.params.id).then(() => {
          return res.sendStatus(200)
@@ -203,8 +202,8 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // ADD A BLOG TAG
-   router.use("/admin/blog/tags", json())
-   router.post("/admin/blog/tags", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.use("/store/blog/tags", json())
+   router.post("/store/blog/tags", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const schema = z.object({
          value: z.string().min(1)
       })
@@ -220,8 +219,8 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // UPDATE A BLOG TAG
-   router.use("/admin/blog/tags/:id", json())
-   router.post("/admin/blog/tags/:id", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.use("/store/blog/tags/:id", json())
+   router.post("/store/blog/tags/:id", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const schema = z.object({
          value: z.string().min(1)
       })
@@ -237,7 +236,7 @@ export default (rootDirectory: string): Router | Router[] => {
    })
 
    // DELETE A BLOG TAG
-   router.delete("/admin/blog/tags/:id", cors(adminCorsOptions), authenticate(), async (req, res) => {
+   router.delete("/store/blog/tags/:id", cors(adminCorsOptions), requireCustomerAuthentication(), async (req, res) => {
       const blogService = req.scope.resolve("blogService")
       blogService.deleteBlogTag(req.params.id).then(() => {
          return res.sendStatus(200)

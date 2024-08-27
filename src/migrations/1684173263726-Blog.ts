@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner, TableForeignKey } from "typeorm"
 
 export class Blog1684173263726 implements MigrationInterface {
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+   public async up(queryRunner: QueryRunner): Promise<void> {
       await queryRunner.query(
          `CREATE TABLE IF NOT EXISTS "blog_category" ("id" character varying NOT NULL,
          "handle" character varying UNIQUE NOT NULL,
@@ -19,7 +19,6 @@ export class Blog1684173263726 implements MigrationInterface {
          `CREATE TABLE IF NOT EXISTS "blog_post" ("id" character varying NOT NULL,
          "handle" character varying UNIQUE NOT NULL,
          "title" character varying NOT NULL,
-         "author" character varying,
          "published" boolean NOT NULL DEFAULT false,
          "content" character varying,
          "description" character varying,
@@ -102,15 +101,15 @@ export class Blog1684173263726 implements MigrationInterface {
          onDelete: "CASCADE",
          onUpdate: "CASCADE"
       }))
-    }
+   }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-       await queryRunner.dropTable("blog_tags", true)
-       await queryRunner.dropTable("blog_product_tags", true)
-       await queryRunner.dropTable("blog_collection_tags", true)
-       await queryRunner.dropTable("blog_tag", true)
-       await queryRunner.dropTable("blog_post", true)
-       await queryRunner.dropTable("blog_category", true)
-    }
+   public async down(queryRunner: QueryRunner): Promise<void> {
+      await queryRunner.dropTable("blog_tags", true)
+      await queryRunner.dropTable("blog_product_tags", true)
+      await queryRunner.dropTable("blog_collection_tags", true)
+      await queryRunner.dropTable("blog_tag", true)
+      await queryRunner.dropTable("blog_post", true)
+      await queryRunner.dropTable("blog_category", true)
+   }
 
 }

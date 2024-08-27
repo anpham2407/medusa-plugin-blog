@@ -1,4 +1,4 @@
-import { TransactionBaseService } from '@medusajs/medusa'
+import { Customer, TransactionBaseService } from '@medusajs/medusa'
 import { ProductRepository } from '@medusajs/medusa/dist/repositories/product'
 import { ProductCollectionRepository } from '@medusajs/medusa/dist/repositories/product-collection'
 import { BlogCategoryRepository } from '../repositories/blog-category'
@@ -6,19 +6,26 @@ import { BlogPostRepository } from '../repositories/blog-post'
 import { BlogTagRepository } from '../repositories/blog-tag'
 
 export default class BlogService extends TransactionBaseService {
+	protected readonly loggedInCustomer_: Customer | null
 	protected readonly productRepository_: typeof ProductRepository
 	protected readonly productCollectionRepository_: typeof ProductCollectionRepository
 	protected readonly blogCategoryRepository_: typeof BlogCategoryRepository
 	protected readonly blogPostRepository_: typeof BlogPostRepository
 	protected readonly blogTagRepository_: typeof BlogTagRepository
 
-	constructor({ productRepository, productCollectionRepository, blogCategoryRepository, blogPostRepository, blogTagRepository }) {
-		super(arguments[0])
-		this.productRepository_ = productRepository
-		this.productCollectionRepository_ = productCollectionRepository
-		this.blogCategoryRepository_ = blogCategoryRepository
-		this.blogPostRepository_ = blogPostRepository
-		this.blogTagRepository_ = blogTagRepository
+	constructor(container, option) {
+		// @ts-expect-error prefer-rest-params
+		super(...arguments)
+		this.productRepository_ = container.productRepository
+		this.productCollectionRepository_ = container.productCollectionRepository
+		this.blogCategoryRepository_ = container.blogCategoryRepository
+		this.blogPostRepository_ = container.blogPostRepository
+		this.blogTagRepository_ = container.blogTagRepository
+		try {
+			this.loggedInCustomer_ = container.loggedInCustomer
+		} catch (e) {
+			// avoid errors when backend first runs
+		}
 	}
 
 	async getBlogCategories() {
@@ -83,14 +90,14 @@ export default class BlogService extends TransactionBaseService {
 
 	async getBlogPosts() {
 		/* @ts-ignore */
-		console.log('2222');
 		const blogPostRepository = this.activeManager_.withRepository(this.blogPostRepository_)
 		return await blogPostRepository.find({
 			relations: {
 				category: true,
 				tags: true,
 				products: true,
-				collections: true
+				collections: true,
+				customer: true
 			}
 		})
 	}
@@ -103,7 +110,8 @@ export default class BlogService extends TransactionBaseService {
 				category: true,
 				tags: true,
 				products: true,
-				collections: true
+				collections: true,
+				customer: true
 			},
 			where: { category_id }
 		})
@@ -117,7 +125,8 @@ export default class BlogService extends TransactionBaseService {
 				category: true,
 				tags: true,
 				products: true,
-				collections: true
+				collections: true,
+				customer: true
 			},
 			where: { category: { handle } }
 		})
@@ -185,7 +194,8 @@ export default class BlogService extends TransactionBaseService {
 				category: true,
 				tags: true,
 				products: true,
-				collections: true
+				collections: true,
+				customer: true
 			},
 			where: { id }
 		})
@@ -199,127 +209,143 @@ export default class BlogService extends TransactionBaseService {
 				category: true,
 				tags: true,
 				products: true,
-				collections: true
+				collections: true,
+				customer: true
 			},
 			where: { handle }
 		})
 	}
 
 	async addBlogPost(post) {
+		const customer = await this.loggedInCustomer_;
 		const { handle, title, author, published, content, description, keywords, category_id, tag_ids, product_ids, collection_ids, metadata } = post
-		if (!handle || !title) throw new Error("Adding a blog post requires a unique handle and a title")
-		let tags = []
-		if (tag_ids) {
-			/* @ts-ignore */
-			const blogTagRepository = this.activeManager_.withRepository(this.blogTagRepository_)
-			for (const tag_id of tag_ids) {
-				const tag = await blogTagRepository.findOne({ where: { id: tag_id } })
-				if (tag) {
-					tags.push(tag)
+
+		try {
+			if (!handle || !title) throw new Error("Adding a blog post requires a unique handle and a title")
+			let tags = []
+			if (tag_ids) {
+				/* @ts-ignore */
+				const blogTagRepository = this.activeManager_.withRepository(this.blogTagRepository_)
+				for (const tag_id of tag_ids) {
+					const tag = await blogTagRepository.findOne({ where: { id: tag_id } })
+					if (tag) {
+						tags.push(tag)
+					}
 				}
 			}
-		}
-		let products = []
-		if (product_ids) {
-			/* @ts-ignore */
-			const productRepository = this.activeManager_.withRepository(this.productRepository_)
-			for (const product_id of product_ids) {
-				const product = await productRepository.findOne({ where: { id: product_id } })
-				if (product) {
-					products.push(product)
+			let products = []
+			if (product_ids) {
+				/* @ts-ignore */
+				const productRepository = this.activeManager_.withRepository(this.productRepository_)
+				for (const product_id of product_ids) {
+					const product = await productRepository.findOne({ where: { id: product_id } })
+					if (product) {
+						products.push(product)
+					}
 				}
 			}
-		}
-		let collections = []
-		if (collection_ids) {
-			/* @ts-ignore */
-			const productCollectionRepository = this.activeManager_.withRepository(this.productCollectionRepository_)
-			for (const collection_id of collection_ids) {
-				const collection = await productCollectionRepository.findOne({ where: { id: collection_id } })
-				if (collection) {
-					collections.push(collection)
+			let collections = []
+			if (collection_ids) {
+				/* @ts-ignore */
+				const productCollectionRepository = this.activeManager_.withRepository(this.productCollectionRepository_)
+				for (const collection_id of collection_ids) {
+					const collection = await productCollectionRepository.findOne({ where: { id: collection_id } })
+					if (collection) {
+						collections.push(collection)
+					}
 				}
 			}
+			/* @ts-ignore */
+			const blogPostRepository = this.activeManager_.withRepository(this.blogPostRepository_)
+			const createdPost = blogPostRepository.create({
+				handle,
+				title,
+				author,
+				published,
+				content,
+				description,
+				keywords,
+				category_id,
+				tags,
+				products,
+				collections,
+				metadata,
+				customer_id: customer.id
+			})
+			const blogPost = await blogPostRepository.save(createdPost)
+			return blogPost
+		} catch (error) {
+			console.log("Caught Error: " + error.message);
+			return error.message;
 		}
-		/* @ts-ignore */
-		const blogPostRepository = this.activeManager_.withRepository(this.blogPostRepository_)
-		const createdPost = blogPostRepository.create({
-			handle,
-			title,
-			author,
-			published,
-			content,
-			description,
-			keywords,
-			category_id,
-			tags,
-			products,
-			collections,
-			metadata
-		})
-		const blogPost = await blogPostRepository.save(createdPost)
-		return blogPost
+
 	}
 
 	async updateBlogPost(id, post) {
 		const { handle, title, author, published, content, description, keywords, category_id, tag_ids, product_ids, collection_ids, metadata } = post
-		if (!id || !handle || !title) throw new Error("Updating a blog post requires an id, a unique handle, and a title")
-		/* @ts-ignore */
-		const blogPostRepository = this.activeManager_.withRepository(this.blogPostRepository_)
-		const existingPost = await blogPostRepository.findOne({
-			relations: {
-				category: true,
-				tags: true,
-				products: true,
-				collections: true
-			},
-			where: { id }
-		})
-		if (!existingPost) throw new Error("No blog post found with that id")
-		existingPost.handle = handle
-		existingPost.title = title
-		existingPost.author = author
-		existingPost.published = published
-		existingPost.content = content
-		existingPost.description = description
-		existingPost.keywords = keywords
-		existingPost.category_id = category_id
-		existingPost.metadata = metadata
-		existingPost.tags = []
-		if (tag_ids) {
+		try {
+			if (!id || !handle || !title) throw new Error("Updating a blog post requires an id, a unique handle, and a title")
 			/* @ts-ignore */
-			const blogTagRepository = this.activeManager_.withRepository(this.blogTagRepository_)
-			for (const tag_id of tag_ids) {
-				const tag = await blogTagRepository.findOne({ where: { id: tag_id } })
-				if (tag) {
-					existingPost.tags.push(tag)
+			const blogPostRepository = this.activeManager_.withRepository(this.blogPostRepository_)
+			const existingPost = await blogPostRepository.findOne({
+				relations: {
+					category: true,
+					tags: true,
+					products: true,
+					collections: true,
+					customer: true
+				},
+				where: { id }
+			})
+			if (!existingPost) throw new Error("No blog post found with that id")
+			existingPost.handle = handle
+			existingPost.title = title
+			existingPost.author = author
+			existingPost.published = published
+			existingPost.content = content
+			existingPost.description = description
+			existingPost.keywords = keywords
+			existingPost.category_id = category_id
+			existingPost.metadata = metadata
+			existingPost.tags = []
+			if (tag_ids) {
+				/* @ts-ignore */
+				const blogTagRepository = this.activeManager_.withRepository(this.blogTagRepository_)
+				for (const tag_id of tag_ids) {
+					const tag = await blogTagRepository.findOne({ where: { id: tag_id } })
+					if (tag) {
+						existingPost.tags.push(tag)
+					}
 				}
 			}
-		}
-		existingPost.products = []
-		if (product_ids) {
-			/* @ts-ignore */
-			const productRepository = this.activeManager_.withRepository(this.productRepository_)
-			for (const product_id of product_ids) {
-				const product = await productRepository.findOne({ where: { id: product_id } })
-				if (product) {
-					existingPost.products.push(product)
+			existingPost.products = []
+			if (product_ids) {
+				/* @ts-ignore */
+				const productRepository = this.activeManager_.withRepository(this.productRepository_)
+				for (const product_id of product_ids) {
+					const product = await productRepository.findOne({ where: { id: product_id } })
+					if (product) {
+						existingPost.products.push(product)
+					}
 				}
 			}
-		}
-		existingPost.collections = []
-		if (collection_ids) {
-			/* @ts-ignore */
-			const productCollectionRepository = this.activeManager_.withRepository(this.productCollectionRepository_)
-			for (const collection_id of collection_ids) {
-				const collection = await productCollectionRepository.findOne({ where: { id: collection_id } })
-				if (collection) {
-					existingPost.collections.push(collection)
+			existingPost.collections = []
+			if (collection_ids) {
+				/* @ts-ignore */
+				const productCollectionRepository = this.activeManager_.withRepository(this.productCollectionRepository_)
+				for (const collection_id of collection_ids) {
+					const collection = await productCollectionRepository.findOne({ where: { id: collection_id } })
+					if (collection) {
+						existingPost.collections.push(collection)
+					}
 				}
 			}
+			const blogPost = await blogPostRepository.save(existingPost)
+			return blogPost
+		} catch (error) {
+			console.log("Caught Error: " + error.message);
+			return error.message;
 		}
-		const blogPost = await blogPostRepository.save(existingPost)
-		return blogPost
 	}
 
 	async deleteBlogPost(id) {
