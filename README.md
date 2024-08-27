@@ -1,6 +1,9 @@
-# medusa-plugin-blog
+# medusa-plugin-customer-blog
 
-Provides a basic blog backend for Medusa. 
+This plugin forked from https://pevey.com/medusa-plugin-blog
+Provides a basic blog backend for Medusa.
+Add relationship with customer
+Customer will manage their own Blog
 
 [Documentation](https://pevey.com/medusa-plugin-blog)
 
@@ -14,13 +17,13 @@ Breaking changes are very likely to occur.
 
 ## Features
 
-- Posts can be tagged with products, collections, and/or custom tag values. 
-- Posts can be queried by tag, category, product, or collection.  
+- Posts can be tagged with products, collections, and/or custom tag values.
+- Posts can be queried by tag, category, product, or collection.
 
 ## Installation
 
 ```bash
-yarn add medusa-plugin-blog
+yarn medusa-plugin-customer-blog
 medusa migrations run
 ```
 
@@ -28,7 +31,7 @@ medusa migrations run
 
 ```bash
 const plugins = [
-  `medusa-plugin-blog`,
+  `medusa-plugin-customer-blog`,
   ...
 ]
 ```
@@ -36,36 +39,47 @@ const plugins = [
 ## API Endpoints
 
 ### `GET /store/blog/posts`
+
 return jsons object containing an array of all blog post objects
 
 ### `GET /store/blog/posts/:handle`
+
 return json object containing a single blog post object
 
 ### `GET /store/blog/categories`
+
 return json object containing an array of all blog category objects
 
 ### `GET /store/blog/categories/:handle`
+
 return json object containing a single blog category object
 
 ### `GET /store/blog/categories/:handle/posts`
+
 return json object containing an array of all blog post objects for a given category
 
 ### `GET /store/blog/tags`
+
 return json object containing an array of all blog tag objects
 
 ### `GET /store/blog/tags/posts`
+
 return json object containing an array of all blog post objects for a given tag or array of tags
 Example: `/store/blog/tags/posts?tag=tag1&tag=tag2&tag=tag3` etc
 
 ### `GET /store/blog/products/:id`
+
 return json object containing an array of all blog post objects for a product with given id
 
 ### `GET /store/blog/collections/:id`
+
 return json object containing an array of all blog post objects for a collection with given id
 
 ### `POST /admin/blog/categories`
+
 create a new blog category object
 Expects body with:
+
 ```js
 {
    handle: string!,
@@ -77,8 +91,10 @@ Expects body with:
 ```
 
 ### `POST /admin/blog/categories/:id`
+
 update an existing blog category object with given id
 Expects body with:
+
 ```js
 {
    handle: string!,
@@ -90,16 +106,18 @@ Expects body with:
 ```
 
 ### `DELETE /admin/blog/categories/:id`
+
 delete an existing blog category object with given id
 
 ### `POST /admin/blog/posts`
+
 create a new blog post object
 Expects body with:
+
 ```js
 {
    handle: string!,
    title: string!,
-   author: string,
    published: boolean,
    content: string,
    description: string,
@@ -113,13 +131,14 @@ Expects body with:
 ```
 
 ### `POST /admin/blog/posts/:id`
+
 update an existing blog post object with given id
 Expects body with:
+
 ```js
 {
    handle: string!,
    title: string!,
-   author: string,
    published: boolean,
    content: string,
    description: string,
@@ -133,11 +152,14 @@ Expects body with:
 ```
 
 ### `DELETE /admin/blog/posts/:id`
+
 delete an existing blog post object with given id
 
 ### `POST /admin/blog/tags`
+
 create a new blog tag object
 Expects body with:
+
 ```js
 {
    value: string!
@@ -145,8 +167,10 @@ Expects body with:
 ```
 
 ### `POST /admin/blog/tags/:id`
+
 update an existing blog tag object with given id
 Expects body with:
+
 ```js
 {
    value: string!
@@ -154,6 +178,7 @@ Expects body with:
 ```
 
 ### `DELETE /admin/blog/tags/:id`
+
 delete an existing blog tag object with given id
 
 ## Objects
