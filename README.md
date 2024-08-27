@@ -190,7 +190,6 @@ delete an existing blog tag object with given id
    id: string!,
    handle: string!,
    title: string!,
-   author: string,
    published: string!,
    content: string,
    description: string,

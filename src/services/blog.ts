@@ -218,7 +218,7 @@ export default class BlogService extends TransactionBaseService {
 
 	async addBlogPost(post) {
 		const customer = await this.loggedInCustomer_;
-		const { handle, title, author, published, content, description, keywords, category_id, tag_ids, product_ids, collection_ids, metadata } = post
+		const { handle, title, published, content, description, keywords, category_id, tag_ids, product_ids, collection_ids, metadata } = post
 
 		try {
 			if (!handle || !title) throw new Error("Adding a blog post requires a unique handle and a title")
@@ -260,7 +260,6 @@ export default class BlogService extends TransactionBaseService {
 			const createdPost = blogPostRepository.create({
 				handle,
 				title,
-				author,
 				published,
 				content,
 				description,
@@ -282,7 +281,7 @@ export default class BlogService extends TransactionBaseService {
 	}
 
 	async updateBlogPost(id, post) {
-		const { handle, title, author, published, content, description, keywords, category_id, tag_ids, product_ids, collection_ids, metadata } = post
+		const { handle, title, published, content, description, keywords, category_id, tag_ids, product_ids, collection_ids, metadata } = post
 		try {
 			if (!id || !handle || !title) throw new Error("Updating a blog post requires an id, a unique handle, and a title")
 			/* @ts-ignore */
@@ -300,7 +299,6 @@ export default class BlogService extends TransactionBaseService {
 			if (!existingPost) throw new Error("No blog post found with that id")
 			existingPost.handle = handle
 			existingPost.title = title
-			existingPost.author = author
 			existingPost.published = published
 			existingPost.content = content
 			existingPost.description = description

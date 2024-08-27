@@ -14,9 +14,6 @@ export class BlogPost extends BaseEntity {
    @Column({ type: "varchar", nullable: false })
    title: string
 
-   @Column({ type: "varchar", nullable: true })
-   author: string | null
-
    @Column({ type: "boolean", nullable: false })
    published: boolean
 

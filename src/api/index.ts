@@ -143,7 +143,6 @@ export default (rootDirectory: string): Router | Router[] => {
       const schema = z.object({
          handle: z.string().optional(),
          title: z.string().min(1),
-         author: z.string().optional(),
          published: z.boolean().default(false),
          content: z.string().optional(),
          description: z.string().optional(),
@@ -171,7 +170,6 @@ export default (rootDirectory: string): Router | Router[] => {
       const schema = z.object({
          handle: z.string().optional(),
          title: z.string().min(1),
-         author: z.string().optional(),
          published: z.boolean().default(false),
          content: z.string().optional(),
          description: z.string().optional(),
