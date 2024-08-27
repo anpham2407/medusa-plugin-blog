@@ -1,6 +1,6 @@
 {
    "name": "medusa-plugin-customer-blog",
-   "version": "0.1.2",
+   "version": "0.1.3",
    "description": "Basic blog backend for Medusa, replationship with customer, customer manage blog",
    "repository": {
       "type": "git",
